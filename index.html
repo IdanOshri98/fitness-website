@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Koach — Fitness, Nutrition &amp; Progress Tracking</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="container header-inner">
+    <div class="brand" data-i18n-title="brandName">
+      <span class="brand-mark">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M13 2 4 14h6l-1 8 9-12h-6l1-8Z" fill="#04201B"/></svg>
+      </span>
+      <span>
+        Koach
+        <span class="brand-sub" data-i18n="brandSub">Strength, tracked.</span>
+      </span>
+    </div>
+
+    <nav class="main-nav" id="mainNav">
+      <a href="#dashboard" data-i18n="navDashboard">Dashboard</a>
+      <a href="workout.html" data-i18n="navWorkouts">Workouts</a>
+      <a href="nutrition.html" data-i18n="navNutrition">Nutrition</a>
+      <a href="progress.html" data-i18n="navProgress">Progress &amp; Weight</a>
+      <a href="#community" data-i18n="navCommunity">Community</a>
+    </nav>
+
+    <div class="header-actions">
+      <div class="lang-switch">
+        <button class="lang-btn" id="langBtn" aria-haspopup="true" aria-expanded="false">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Z" stroke="currentColor" stroke-width="1.6"/><path d="M3 12h18M12 3c2.5 2.6 3.8 5.7 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.7-3.8-9S9.5 5.6 12 3Z" stroke="currentColor" stroke-width="1.6"/></svg>
+          <span id="langLabel">EN</span>
+          <svg viewBox="0 0 24 24" fill="none"><path d="m6 9 6 6 6-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        </button>
+        <div class="lang-menu" id="langMenu" role="listbox" aria-label="Choose language">
+          <button class="lang-option" role="option" data-lang="en" aria-checked="true">English</button>
+          <button class="lang-option" role="option" data-lang="he" aria-checked="false">עברית</button>
+          <button class="lang-option" role="option" data-lang="es" aria-checked="false">Español</button>
+          <button class="lang-option" role="option" data-lang="ar" aria-checked="false">العربية</button>
+        </div>
+      </div>
+      <a class="btn btn-primary btn-sm" href="workout.html" data-i18n="navCta">Try the demo</a>
+      <button class="nav-toggle" id="navToggle" aria-label="Toggle menu" aria-expanded="false">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M4 6h16M4 12h16M4 18h16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="container hero-grid">
+      <div>
+        <span class="eyebrow">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M12 2 2 7l10 5 10-5-10-5Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M2 17l10 5 10-5M2 12l10 5 10-5" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+          <span data-i18n="heroEyebrow">Built for Israel's fitness scene</span>
+        </span>
+        <h1 data-i18n="heroTitle">Train smarter. Eat better. <span class="accent">Get stronger.</span></h1>
+        <p class="lead" data-i18n="heroLead">Koach brings your workouts, Israeli-food nutrition log, weight trends and a supportive community into one clear dashboard — in Hebrew, English, Spanish or Arabic.</p>
+        <div class="hero-cta">
+          <a class="btn btn-primary" href="workout.html" data-i18n="heroCtaPrimary">Explore the dashboard</a>
+          <a class="btn btn-ghost" href="nutrition.html" data-i18n="heroCtaSecondary">See nutrition tools</a>
+        </div>
+        <div class="hero-stats">
+          <div class="hero-stat"><b>40K+</b><span data-i18n="statUsers">Active members</span></div>
+          <div class="hero-stat"><b>1,200+</b><span data-i18n="statFoods">Israeli foods logged</span></div>
+          <div class="hero-stat"><b>4</b><span data-i18n="statLangs">Languages supported</span></div>
+        </div>
+      </div>
+
+      <div class="dash-mock" aria-hidden="true">
+        <div class="dash-top">
+          <div class="dash-hello"><span data-i18n="dashHello">Hello,</span> <span>Noa</span></div>
+          <div class="dash-avatar">N</div>
+        </div>
+        <div class="dash-grid">
+          <div class="dash-card">
+            <h4><span data-i18n="cardWorkouts">Workouts</span>
+              <svg viewBox="0 0 24 24" fill="none"><path d="M7 17 17 7M17 7H9M17 7v8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </h4>
+            <div class="bar-chart">
+              <i style="height:38%"></i><i style="height:60%"></i><i style="height:44%"></i>
+              <i class="active" style="height:92%"></i><i style="height:30%"></i><i style="height:20%"></i><i style="height:15%"></i>
+            </div>
+            <div class="metric-big">8h</div>
+            <div class="metric-sub" data-i18n="cardWorkoutsSub">Total this week</div>
+          </div>
+          <div class="dash-card">
+            <h4><span data-i18n="cardSteps">Steps</span></h4>
+            <div class="ring-wrap">
+              <svg width="70" height="70" viewBox="0 0 70 70">
+                <circle cx="35" cy="35" r="29" stroke="var(--color-border)" stroke-width="7" fill="none"/>
+                <circle cx="35" cy="35" r="29" stroke="var(--color-primary)" stroke-width="7" fill="none" stroke-linecap="round" stroke-dasharray="182" stroke-dashoffset="55" transform="rotate(-90 35 35)"/>
+              </svg>
+              <span class="ring-value">5.4km</span>
+            </div>
+            <div class="metric-sub"><span data-i18n="cardGoal">Goal</span> 10km</div>
+          </div>
+          <div class="dash-card">
+            <h4><span data-i18n="cardWater">Water</span></h4>
+            <div class="water-fill">0.7L</div>
+            <div class="metric-sub" data-i18n="cardWaterSub">Goal 2.5L</div>
+          </div>
+        </div>
+        <div class="dash-goals">
+          <div class="dash-card">
+            <h4><span data-i18n="cardGoals">Daily goals</span></h4>
+            <div class="goal-row done"><div class="goal-check"><svg viewBox="0 0 24 24" fill="none"><path d="m5 13 4 4 10-10" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span data-i18n="goalSleep">Sleep 7+ hours</span></div>
+            <div class="goal-row done"><div class="goal-check"><svg viewBox="0 0 24 24" fill="none"><path d="m5 13 4 4 10-10" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span data-i18n="goalWater">Drink 2.5L water</span></div>
+            <div class="goal-row"><div class="goal-check"></div><span data-i18n="goalWorkout">Complete workout</span></div>
+            <div class="goal-row"><div class="goal-check"></div><span data-i18n="goalSteps">10,000 steps</span></div>
+            <div class="progress-bar-track"><div class="progress-bar-fill" style="width:55%"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DASHBOARD / FEATURE EXPLORER -->
+  <section class="section" id="dashboard">
+    <div class="container">
+      <div class="section-head">
+        <span class="section-tag" data-i18n="tagOverview">Overview</span>
+        <h2 data-i18n="dashboardTitle">One dashboard, every metric</h2>
+        <p data-i18n="dashboardLead">Switch between the tools you use most — workouts, nutrition, progress and community — without leaving the page.</p>
+      </div>
+
+      <div class="tab-bar" role="tablist">
+        <button class="tab-btn active" data-tab="workouts" role="tab" aria-selected="true" data-i18n="navWorkouts">Workouts</button>
+        <button class="tab-btn" data-tab="nutrition" role="tab" aria-selected="false" data-i18n="navNutrition">Nutrition</button>
+        <button class="tab-btn" data-tab="weight" role="tab" aria-selected="false" data-i18n="tabWeight">Weight Tracking</button>
+        <button class="tab-btn" data-tab="community" role="tab" aria-selected="false" data-i18n="navCommunity">Community</button>
+      </div>
+
+      <!-- WORKOUTS PANEL -->
+      <div class="tab-panel active" id="panel-workouts">
+        <div class="feature-grid">
+          <div>
+            <span class="section-tag" data-i18n="navWorkouts">Workouts</span>
+            <h2 data-i18n="workoutsTitle">Plan and log every session</h2>
+            <p data-i18n="workoutsLead">Build routines, track sets and reps, and let Koach adapt your plan as you get stronger.</p>
+            <ul class="feature-list">
+              <li>
+                <span class="ico"><svg viewBox="0 0 24 24" fill="none"><path d="M6 9v6M18 9v6M2 10v4M22 10v4M6 12h12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></span>
+                <div><h4 data-i18n="wf1h">Custom routines</h4><p data-i18n="wf1p">Strength, HIIT, or mobility — build a weekly plan around your goals.</p></div>
+              </li>
+              <li>
+                <span class="ico"><svg viewBox="0 0 24 24" fill="none"><path d="M4 19V10M12 19V4M20 19v-7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></span>
+                <div><h4 data-i18n="wf2h">Set &amp; rep tracking</h4><p data-i18n="wf2p">Log every set with automatic rest timers and personal-record alerts.</p></div>
+              </li>
+              <li>
+                <span class="ico"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="1.8"/><path d="M4 21c0-4 3.6-6 8-6s8 2 8 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></span>
+                <div><h4 data-i18n="wf3h">Trainer &amp; class sync</h4><p data-i18n="wf3p">Connect sessions booked with your gym or personal trainer automatically.</p></div>
+              </li>
+            </ul>
+          </div>
+          <div class="panel-visual">
+            <h3><span data-i18n="wTodayTitle">Today · Tue, 21 Oct</span><span class="pill" data-i18n="wUpper">Upper Body &amp; Cardio</span></h3>
+            <div class="workout-row">
+              <div class="workout-icon"><svg viewBox="0 0 24 24" fill="none"><path d="M6 9v6M18 9v6M2 10v4M22 10v4M6 12h12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></div>
+              <div class="workout-info"><h5 data-i18n="wRow1">Bench Press</h5><span data-i18n="wRow1sub">4 sets × 8 reps · 60kg</span></div>
+              <div class="workout-badge" data-i18n="wDone">Done</div>
+            </div>
+            <div class="workout-row">
+              <div class="workout-icon"><svg viewBox="0 0 24 24" fill="none"><path d="M4 19V10M12 19V4M20 19v-7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></div>
+              <div class="workout-info"><h5 data-i18n="wRow2">Pull-ups</h5><span data-i18n="wRow2sub">3 sets × 10 reps</span></div>
+              <div class="workout-badge" data-i18n="wDone">Done</div>
+            </div>
+            <div class="workout-row">
+              <div class="workout-icon"><svg viewBox="0 0 24 24" fill="none"><path d="M3 12h4l3-8 4 16 3-8h4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+              <div class="workout-info"><h5 data-i18n="wRow3">Treadmill Cardio</h5><span data-i18n="wRow3sub">20 min · Zone 3</span></div>
+              <div class="workout-badge" style="color:var(--color-text-muted)" data-i18n="wUpNext">Up next</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- NUTRITION PANEL -->
+      <div class="tab-panel" id="panel-nutrition">
+        <div class="feature-grid">
+          <div>
+            <span class="section-tag" data-i18n="navNutrition">Nutrition</span>
+            <h2 data-i18n="nutritionTitle">Built for the Israeli plate</h2>
+            <p data-i18n="nutritionLead">A local food database with kosher labels, home-style dishes and restaurant staples — so logging your meals actually matches what you eat.</p>
+            <ul class="feature-list">
+              <li>
+                <span class="ico"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3v6M8 5l2 4M16 5l-2 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M4 21c0-5 3.6-9 8-9s8 4 8 9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></span>
+                <div><h4 data-i18n="nf1h">Israeli food database</h4><p data-i18n="nf1p">Shakshuka, sabich, hummus and more, pre-loaded with accurate macros.</p></div>
+              </li>
+              <li>
+                <span class="ico"><svg viewBox="0 0 24 24" fill="none"><path d="m5 13 4 4 10-10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+                <div><h4 data-i18n="nf2h">Kosher &amp; dietary tags</h4><p data-i18n="nf2p">Filter by kosher, dairy, parve or meat, plus vegan and gluten-free.</p></div>
+              </li>
+              <li>
+                <span class="ico"><svg viewBox="0 0 24 24" fill="none"><path d="M4 19h16M7 15l3-6 3 4 4-8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+                <div><h4 data-i18n="nf3h">Macro &amp; calorie targets</h4><p data-i18n="nf3p">Personalized daily targets that adjust to your training load.</p></div>
+              </li>
+            </ul>
+          </div>
+          <div class="panel-visual">
+            <h3><span data-i18n="nTodayTitle">Today's log</span><span class="pill" id="calPill">1,540 / 2,200 kcal</span></h3>
+            <div class="food-row">
+              <div class="food-name"><span data-i18n="food1">Shakshuka</span> <span class="food-tag kosher" data-i18n="tagDairy">Dairy</span></div>
+              <div class="food-cal">420 kcal</div>
+            </div>
+            <div class="food-row">
+              <div class="food-name"><span data-i18n="food2">Sabich Pita</span> <span class="food-tag kosher" data-i18n="tagParve">Parve</span></div>
+              <div class="food-cal">610 kcal</div>
+            </div>
+            <div class="food-row">
+              <div class="food-name"><span data-i18n="food3">Hummus &amp; Salad Bowl</span> <span class="food-tag kosher" data-i18n="tagVegan">Vegan</span></div>
+              <div class="food-cal">350 kcal</div>
+            </div>
+            <div class="food-row">
+              <div class="food-name"><span data-i18n="food4">Cottage Cheese 5%</span> <span class="food-tag kosher" data-i18n="tagDairy">Dairy</span></div>
+              <div class="food-cal">160 kcal</div>
+            </div>
+            <div class="progress-bar-track" style="margin-top:16px;"><div class="progress-bar-fill" style="width:70%"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- WEIGHT PANEL -->
+      <div class="tab-panel" id="panel-weight">
+        <div class="feature-grid">
+          <div>
+            <span class="section-tag" data-i18n="tabWeight">Weight Tracking</span>
+            <h2 data-i18n="weightTitle">Watch your trend, not the noise</h2>
+            <p data-i18n="weightLead">Log your weight daily and Koach smooths out the day-to-day fluctuation so you can see real progress.</p>
+            <ul class="feature-list">
+              <li>
+                <span class="ico"><svg viewBox="0 0 24 24" fill="none"><path d="M3 17 9 9l4 4 8-10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+                <div><h4 data-i18n="wt1h">Trend smoothing</h4><p data-i18n="wt1p">A rolling average removes water-weight noise so trends stay honest.</p></div>
+              </li>
+              <li>
+                <span class="ico"><svg viewBox="0 0 24 24" fill="none"><rect x="4" y="4" width="16" height="16" rx="3" stroke="currentColor" stroke-width="1.8"/><path d="M8 8h8v8H8z" stroke="currentColor" stroke-width="1.8"/></svg></span>
+                <div><h4 data-i18n="wt2h">Body measurements</h4><p data-i18n="wt2p">Track waist, chest and more alongside your weight for the full picture.</p></div>
+              </li>
+              <li>
+                <span class="ico"><svg viewBox="0 0 24 24" fill="none"><path d="M12 2v20M2 12h20" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></span>
+                <div><h4 data-i18n="wt3h">Goal projection</h4><p data-i18n="wt3p">See an estimated date to reach your target weight based on your pace.</p></div>
+              </li>
+            </ul>
+          </div>
+          <div class="panel-visual">
+            <h3><span data-i18n="wtChartTitle">Last 7 weeks</span><span class="pill" data-i18n="wtDown">-3.2 kg</span></h3>
+            <div class="weight-chart">
+              <div class="col"><div class="bar" style="height:100%"></div><span class="lbl">82.4</span></div>
+              <div class="col"><div class="bar" style="height:92%"></div><span class="lbl">81.9</span></div>
+              <div class="col"><div class="bar" style="height:88%"></div><span class="lbl">81.2</span></div>
+              <div class="col"><div class="bar" style="height:80%"></div><span class="lbl">80.5</span></div>
+              <div class="col"><div class="bar" style="height:70%"></div><span class="lbl">79.8</span></div>
+              <div class="col"><div class="bar" style="height:60%"></div><span class="lbl">79.4</span></div>
+              <div class="col"><div class="bar" style="height:50%"></div><span class="lbl">79.2</span></div>
+            </div>
+            <div class="weight-summary">
+              <div class="card-mini accent"><b>79.2kg</b><span data-i18n="wtCurrent">Current</span></div>
+              <div class="card-mini"><b>75kg</b><span data-i18n="wtGoal">Goal</span></div>
+              <div class="card-mini"><b>9 wk</b><span data-i18n="wtEta">Est. to goal</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- COMMUNITY PANEL -->
+      <div class="tab-panel" id="panel-community">
+        <div class="section-head" style="margin-bottom:var(--space-5);">
+          <span class="section-tag" data-i18n="navCommunity">Community</span>
+          <h2 data-i18n="communityTitle">You're not training alone</h2>
+          <p data-i18n="communityLead">Share progress, join local challenges, and cheer on gym-goers across Israel.</p>
+          <div class="content-demo-notice" data-i18n="communityDemoNotice">Illustrative example — not real member activity</div>
+        </div>
+        <div class="community-grid">
+          <div class="community-card">
+            <div class="community-user"><div class="avatar-circ">D</div><div><b data-i18n="cUser1">Dana K.</b><span data-i18n="cLoc1">Tel Aviv · 5K Challenge</span></div></div>
+            <p data-i18n="cPost1">"Hit a new deadlift PR this morning thanks to the progressive plan Koach built for me — 100kg!"</p>
+            <div class="community-meta">
+              <span class="item"><svg viewBox="0 0 24 24" fill="none"><path d="M12 21s-7-4.4-9.5-8.7C1 9 2.5 5.5 6 5c2-.3 3.8.8 6 3 2.2-2.2 4-3.3 6-3 3.5.5 5 4 3.5 7.3C19 16.6 12 21 12 21Z" stroke="currentColor" stroke-width="1.6"/></svg> 128</span>
+              <span class="item"><svg viewBox="0 0 24 24" fill="none"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v10Z" stroke="currentColor" stroke-width="1.6"/></svg> 24</span>
+            </div>
+          </div>
+          <div class="community-card">
+            <div class="community-user"><div class="avatar-circ">R</div><div><b data-i18n="cUser2">Roi B.</b><span data-i18n="cLoc2">Haifa · Strength Group</span></div></div>
+            <p data-i18n="cPost2">"Down 8kg since January by finally logging my Israeli meals accurately. This app gets the food right."</p>
+            <div class="community-meta">
+              <span class="item"><svg viewBox="0 0 24 24" fill="none"><path d="M12 21s-7-4.4-9.5-8.7C1 9 2.5 5.5 6 5c2-.3 3.8.8 6 3 2.2-2.2 4-3.3 6-3 3.5.5 5 4 3.5 7.3C19 16.6 12 21 12 21Z" stroke="currentColor" stroke-width="1.6"/></svg> 96</span>
+              <span class="item"><svg viewBox="0 0 24 24" fill="none"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v10Z" stroke="currentColor" stroke-width="1.6"/></svg> 17</span>
+            </div>
+          </div>
+          <div class="community-card">
+            <div class="community-user"><div class="avatar-circ">מ</div><div><b data-i18n="cUser3">Michal S.</b><span data-i18n="cLoc3">Jerusalem · Yoga &amp; Mobility</span></div></div>
+            <p data-i18n="cPost3">"Joined the 30-day mobility challenge with three friends from my gym — best decision this year."</p>
+            <div class="community-meta">
+              <span class="item"><svg viewBox="0 0 24 24" fill="none"><path d="M12 21s-7-4.4-9.5-8.7C1 9 2.5 5.5 6 5c2-.3 3.8.8 6 3 2.2-2.2 4-3.3 6-3 3.5.5 5 4 3.5 7.3C19 16.6 12 21 12 21Z" stroke="currentColor" stroke-width="1.6"/></svg> 203</span>
+              <span class="item"><svg viewBox="0 0 24 24" fill="none"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v10Z" stroke="currentColor" stroke-width="1.6"/></svg> 41</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- STATS BAND -->
+  <section class="section section-alt">
+    <div class="container">
+      <div class="stat-cards">
+        <div class="stat-card">
+          <div class="icon"><svg viewBox="0 0 24 24" fill="none"><path d="M6 9v6M18 9v6M2 10v4M22 10v4M6 12h12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></div>
+          <b>312</b><span data-i18n="statW">Workouts logged this month</span>
+          <span class="delta">+18%</span>
+        </div>
+        <div class="stat-card">
+          <div class="icon"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3v6M8 5l2 4M16 5l-2 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M4 21c0-5 3.6-9 8-9s8 4 8 9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></div>
+          <b>1,208</b><span data-i18n="statF">Israeli foods in database</span>
+          <span class="delta">+64</span>
+        </div>
+        <div class="stat-card">
+          <div class="icon"><svg viewBox="0 0 24 24" fill="none"><path d="M3 17 9 9l4 4 8-10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <b>-3.2kg</b><span data-i18n="statAvgLoss">Avg. member trend / 8wk</span>
+          <span class="delta" data-i18n="onTrack">On track</span>
+        </div>
+        <div class="stat-card">
+          <div class="icon"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="1.8"/><path d="M4 21c0-4 3.6-6 8-6s8 2 8 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></div>
+          <b>6,400+</b><span data-i18n="statCommunity">Community members</span>
+          <span class="delta">+312 <span data-i18n="thisWeek">this week</span></span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="section">
+    <div class="container">
+      <div class="cta-band">
+        <h2 data-i18n="ctaTitle">Start tracking in your language</h2>
+        <p data-i18n="ctaLead">Koach is free to try — switch between English, Hebrew, Spanish and Arabic anytime from the top bar.</p>
+        <a class="btn btn-primary" href="#dashboard" data-i18n="ctaButton">Get started free</a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="container footer-inner">
+    <div class="brand" style="font-size:1rem;">
+      <span class="brand-mark" style="width:28px;height:28px;">
+        <svg viewBox="0 0 24 24" fill="none" width="16" height="16"><path d="M13 2 4 14h6l-1 8 9-12h-6l1-8Z" fill="#04201B"/></svg>
+      </span>
+      <span>Koach</span>
+    </div>
+    <div class="footer-links">
+      <a href="#dashboard" data-i18n="navDashboard">Dashboard</a>
+      <a href="workout.html" data-i18n="navWorkouts">Workouts</a>
+      <a href="nutrition.html" data-i18n="navNutrition">Nutrition</a>
+      <a href="#community" data-i18n="navCommunity">Community</a>
+    </div>
+    <span data-i18n="footerRights">© 2026 Koach. Made for Israel's fitness community.</span>
+  </div>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>

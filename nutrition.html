@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Koach — Nutrition</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="container header-inner">
+    <a class="brand" href="index.html" style="text-decoration:none;">
+      <span class="brand-mark">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M13 2 4 14h6l-1 8 9-12h-6l1-8Z" fill="#04201B"/></svg>
+      </span>
+      <span>Koach<span class="brand-sub" data-i18n="brandSub">Strength, tracked.</span></span>
+    </a>
+
+    <nav class="main-nav" id="mainNav">
+      <a href="dashboard.html" data-i18n="appHome">Home</a>
+      <a href="workout.html" data-i18n="navWorkouts">Workouts</a>
+      <a href="nutrition.html" class="active" data-i18n="navNutrition">Nutrition</a>
+      <a href="progress.html" data-i18n="navProgress">Progress &amp; Weight</a>
+      <a href="index.html#community" data-i18n="navCommunity">Community</a>
+    </nav>
+
+    <div class="header-actions">
+      <div class="lang-switch">
+        <button class="lang-btn" id="langBtn" aria-haspopup="true" aria-expanded="false">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Z" stroke="currentColor" stroke-width="1.6"/><path d="M3 12h18M12 3c2.5 2.6 3.8 5.7 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.7-3.8-9S9.5 5.6 12 3Z" stroke="currentColor" stroke-width="1.6"/></svg>
+          <span id="langLabel">EN</span>
+          <svg viewBox="0 0 24 24" fill="none"><path d="m6 9 6 6 6-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        </button>
+        <div class="lang-menu" id="langMenu" role="listbox" aria-label="Choose language">
+          <button class="lang-option" role="option" data-lang="en" aria-checked="true">English</button>
+          <button class="lang-option" role="option" data-lang="he" aria-checked="false">עברית</button>
+          <button class="lang-option" role="option" data-lang="es" aria-checked="false">Español</button>
+          <button class="lang-option" role="option" data-lang="ar" aria-checked="false">العربية</button>
+        </div>
+      </div>
+      <button class="btn btn-ghost btn-sm" id="logoutBtn" data-i18n="logoutBtn">Log out</button>
+      <button class="nav-toggle" id="navToggle" aria-label="Toggle menu" aria-expanded="false">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M4 6h16M4 12h16M4 18h16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main class="app-main">
+  <div class="container">
+    <div class="app-header">
+      <h1 data-i18n="nutritionPageTitle">Nutrition</h1>
+      <div class="app-subnav">
+        <a href="workout.html" data-i18n="navWorkouts">Workouts</a>
+        <a href="nutrition.html" class="active" data-i18n="navNutrition">Nutrition</a>
+        <a href="progress.html" data-i18n="navProgress">Progress &amp; Weight</a>
+      </div>
+    </div>
+
+    <div id="nutritionRoot"></div>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="container footer-inner">
+    <div class="brand" style="font-size:1rem;">
+      <span class="brand-mark" style="width:28px;height:28px;">
+        <svg viewBox="0 0 24 24" fill="none" width="16" height="16"><path d="M13 2 4 14h6l-1 8 9-12h-6l1-8Z" fill="#04201B"/></svg>
+      </span>
+      <span>Koach</span>
+    </div>
+    <span data-i18n="footerRights">© 2026 Koach. Made for Israel's fitness community.</span>
+  </div>
+</footer>
+
+<div class="modal-overlay" id="targetsOverlay" hidden><div class="modal-sheet"></div></div>
+<div class="modal-overlay" id="addFoodOverlay" hidden><div class="modal-sheet"></div></div>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/supabase-client.js"></script>
+<script src="js/store.js"></script>
+<script src="js/auth-gate.js"></script>
+<script src="script.js"></script>
+<script src="js/nutrition.js"></script>
+</body>
+</html>

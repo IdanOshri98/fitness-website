@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Koach — Log In</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div class="auth-shell">
+  <div class="auth-card">
+    <div class="brand" style="justify-content:center;margin-bottom:var(--space-5);">
+      <span class="brand-mark">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M13 2 4 14h6l-1 8 9-12h-6l1-8Z" fill="#04201B"/></svg>
+      </span>
+      <span>Koach<span class="brand-sub" data-i18n="brandSub">Strength, tracked.</span></span>
+    </div>
+
+    <div class="auth-tabs" id="authTabs">
+      <button type="button" class="auth-tab active" data-mode="login" data-i18n="authTabLogin">Log In</button>
+      <button type="button" class="auth-tab" data-mode="signup" data-i18n="authTabSignup">Sign Up</button>
+    </div>
+
+    <h1 id="authHeading" data-i18n="authTitle">Welcome back</h1>
+    <p class="auth-sub" id="authSub" data-i18n="authSubtitle">Log in to see your workouts, nutrition plan and progress.</p>
+
+    <div class="auth-message" id="authMessage" hidden></div>
+
+    <form id="authForm">
+      <div class="form-row">
+        <label data-i18n="authEmailLabel">Email</label>
+        <input type="email" id="authEmail" placeholder="you@example.com" required autocomplete="email">
+      </div>
+      <div class="form-row" id="authPasswordRow">
+        <label data-i18n="authPasswordLabel">Password</label>
+        <input type="password" id="authPassword" placeholder="••••••••" minlength="6" autocomplete="current-password">
+      </div>
+      <a href="#" class="auth-inline-link" id="forgotPasswordLink" data-i18n="forgotPasswordLink">Forgot password?</a>
+      <button type="submit" class="btn btn-primary" id="authSubmitBtn" style="width:100%;margin-top:var(--space-2);" data-i18n="authContinueBtn">Continue</button>
+    </form>
+
+    <a href="#" class="auth-back-link" id="backToLoginLink" data-i18n="resetBackToLogin" hidden>← Back to log in</a>
+    <a href="index.html" class="auth-back-link" id="backToHomeLink" data-i18n="authBackLink">← Back to the homepage</a>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/supabase-client.js"></script>
+<script src="script.js"></script>
+<script>
+(function () {
+  "use strict";
+  var mode = "login"; // "login" | "signup" | "forgot"
+  var tabsEl = document.getElementById("authTabs");
+  var tabs = document.querySelectorAll(".auth-tab");
+  var heading = document.getElementById("authHeading");
+  var sub = document.getElementById("authSub");
+  var submitBtn = document.getElementById("authSubmitBtn");
+  var messageEl = document.getElementById("authMessage");
+  var form = document.getElementById("authForm");
+  var passwordRow = document.getElementById("authPasswordRow");
+  var passwordInput = document.getElementById("authPassword");
+  var forgotLink = document.getElementById("forgotPasswordLink");
+  var backToLoginLink = document.getElementById("backToLoginLink");
+  var backToHomeLink = document.getElementById("backToHomeLink");
+
+  function showMessage(text, isError) {
+    messageEl.textContent = text;
+    messageEl.hidden = false;
+    messageEl.classList.toggle("error", !!isError);
+  }
+  function clearMessage() {
+    messageEl.hidden = true;
+    messageEl.textContent = "";
+  }
+
+  function setMode(next) {
+    mode = next;
+    tabs.forEach(function (tab) { tab.classList.toggle("active", tab.getAttribute("data-mode") === mode); });
+    var i18n = window.KoachI18n;
+    var isForgot = mode === "forgot";
+
+    tabsEl.hidden = isForgot;
+    passwordRow.hidden = isForgot;
+    passwordInput.required = !isForgot;
+    forgotLink.hidden = isForgot || mode === "signup";
+    backToLoginLink.hidden = !isForgot;
+    backToHomeLink.hidden = isForgot;
+
+    if (mode === "signup") {
+      heading.textContent = i18n.t("authSignupTitle");
+      sub.textContent = i18n.t("authSignupSubtitle");
+      submitBtn.textContent = i18n.t("authTabSignup");
+    } else if (isForgot) {
+      heading.textContent = i18n.t("resetTitle");
+      sub.textContent = i18n.t("resetSubtitle");
+      submitBtn.textContent = i18n.t("resetSendBtn");
+    } else {
+      heading.textContent = i18n.t("authTitle");
+      sub.textContent = i18n.t("authSubtitle");
+      submitBtn.textContent = i18n.t("authContinueBtn");
+    }
+    clearMessage();
+  }
+
+  tabs.forEach(function (tab) {
+    tab.addEventListener("click", function () { setMode(tab.getAttribute("data-mode")); });
+  });
+  forgotLink.addEventListener("click", function (e) { e.preventDefault(); setMode("forgot"); });
+  backToLoginLink.addEventListener("click", function (e) { e.preventDefault(); setMode("login"); });
+
+  /* If someone is already signed in, skip straight to the dashboard. */
+  if (window.sb) {
+    window.sb.auth.getSession().then(function (res) {
+      if (res.data.session) location.href = "dashboard.html";
+    });
+  }
+
+  form.addEventListener("submit", function (e) {
+    e.preventDefault();
+    clearMessage();
+    if (!window.sb) { showMessage("Supabase is not configured.", true); return; }
+    var email = document.getElementById("authEmail").value.trim();
+    submitBtn.disabled = true;
+
+    if (mode === "forgot") {
+      var redirectTo = new URL("reset-password.html", location.href).href;
+      window.sb.auth.resetPasswordForEmail(email, { redirectTo: redirectTo }).then(function (res) {
+        submitBtn.disabled = false;
+        if (res.error) { showMessage(res.error.message, true); return; }
+        showMessage(window.KoachI18n.t("resetCheckEmailMsg"), false);
+      });
+      return;
+    }
+
+    var password = passwordInput.value;
+    var call = mode === "signup"
+      ? window.sb.auth.signUp({ email: email, password: password })
+      : window.sb.auth.signInWithPassword({ email: email, password: password });
+
+    call.then(function (res) {
+      submitBtn.disabled = false;
+      if (res.error) {
+        showMessage(res.error.message, true);
+        return;
+      }
+      if (mode === "signup" && !res.data.session) {
+        /* Email confirmation is required by the project's Supabase Auth
+           settings — there is no session yet until the user confirms. */
+        showMessage(window.KoachI18n.t("authCheckEmailMsg"), false);
+        return;
+      }
+      location.href = "dashboard.html";
+    });
+  });
+
+  document.addEventListener("DOMContentLoaded", function () {
+    setTimeout(function () { setMode(mode); }, 0);
+  });
+})();
+</script>
+</body>
+</html>
