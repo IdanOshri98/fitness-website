@@ -7,7 +7,7 @@
   var WEEKDAY_KEYS = ["weekdaySun", "weekdayMon", "weekdayTue", "weekdayWed", "weekdayThu", "weekdayFri", "weekdaySat"];
   var SPLIT_ORDER = ["full_body", "ab", "abc", "ppl"];
   var SPLIT_NAME_KEYS = { full_body: "splitFullBody", ab: "splitAB", abc: "splitABC", ppl: "splitPPL" };
-  var activeWorkout = null; // { workout, entries: {exerciseId:{weight, reps:[]}} }
+  var activeWorkout = null; // { workout, date }
   var selectedSplit = null;
   var editingProgram = null; // deep-clone while editing
 
@@ -81,17 +81,21 @@
 
     /* --- rolling 7 days --- */
     var days = Store.getRolling7Days();
-    var strip = el('<div class="card"><div class="card-title-row"><h2>' + t("last7DaysTitle") + "</h2></div><div class=\"day-strip\" id=\"dayStrip\"></div></div>");
+    var strip = el('<div class="card"><div class="card-title-row"><h2>' + t("last7DaysTitle") + "</h2></div><div class=\"day-strip\" id=\"dayStrip\"></div><p class=\"day-strip-hint\">" + t("missedDayHint") + "</p></div>");
     var dayStripEl = strip.querySelector("#dayStrip");
     days.forEach(function (d) {
       var label = d.isToday ? t("todayLabel") : t(WEEKDAY_KEYS[d.weekdayIndex]);
+      var clickable = !d.isToday && !d.completed;
       var cell = el(
-        '<div class="day-cell' + (d.completed ? " done" : "") + (d.isToday ? " today" : "") + '">' +
+        '<div class="day-cell' + (d.completed ? " done" : "") + (d.isToday ? " today" : "") + (clickable ? " clickable" : "") + '" data-date="' + d.date + '">' +
         '<span class="day-label">' + label + "</span>" +
-        '<span class="day-mark">' + (d.completed ? '<svg viewBox="0 0 24 24" fill="none"><path d="m5 13 4 4 10-10" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>' : (d.completed === false && !d.workoutName ? "" : "")) + "</span>" +
+        '<span class="day-mark">' + (d.completed ? '<svg viewBox="0 0 24 24" fill="none"><path d="m5 13 4 4 10-10" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>' : (clickable ? '<svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>' : "")) + "</span>" +
         '<span class="day-sub">' + (d.completed ? escapeHtml(d.workoutName) : t("restLabel")) + "</span>" +
         "</div>"
       );
+      if (clickable) {
+        cell.addEventListener("click", function () { openWorkoutPicker(d.date); });
+      }
       dayStripEl.appendChild(cell);
     });
     wrap.appendChild(strip);
@@ -104,7 +108,10 @@
         '<div class="next-workout-banner">' +
         '<div><div class="label">' + t("nextWorkoutLabel") + '</div><h3>' + escapeHtml(next.name) + '</h3>' +
         '<div class="muscle-tags">' + next.muscleGroups.map(muscleTag).join("") + "</div></div>" +
+        '<div style="display:flex;flex-direction:column;gap:8px;align-items:flex-end;">' +
         '<button class="btn btn-primary" id="startWorkoutBtn">' + t("startWorkoutBtn") + "</button>" +
+        '<button class="link-btn" id="chooseDifferentBtn">' + t("chooseDifferentWorkoutLink") + "</button>" +
+        "</div>" +
         "</div>";
     } else {
       banner.innerHTML = '<div class="empty-state">' + t("noProgramYet") + "</div>";
@@ -126,10 +133,59 @@
       render();
     });
     if (next) {
-      wrap.querySelector("#startWorkoutBtn").addEventListener("click", function () { openActiveWorkout(next); });
+      wrap.querySelector("#startWorkoutBtn").addEventListener("click", function () { openActiveWorkout(next, Store.todayISO()); });
+      wrap.querySelector("#chooseDifferentBtn").addEventListener("click", function () { openWorkoutPicker(Store.todayISO()); });
     }
 
     return wrap;
+  }
+
+  function formatDateLabel(dateISO) {
+    try {
+      var d = new Date(dateISO + "T00:00:00");
+      return d.toLocaleDateString(I18n.getLang(), { month: "short", day: "numeric" });
+    } catch (e) {
+      return dateISO;
+    }
+  }
+
+  /* ===================== WORKOUT PICKER (today or a missed past day) ===================== */
+  function openWorkoutPicker(dateISO) {
+    var data = Store.getData();
+    var isToday = dateISO === Store.todayISO();
+    var recommended = isToday ? Store.getNextWorkout() : null;
+    var overlay = document.getElementById("workoutPickerOverlay");
+    var sheet = overlay.querySelector(".modal-sheet");
+
+    sheet.innerHTML =
+      '<div class="modal-head"><h2>' + (isToday ? t("chooseWorkoutTitle") : t("logPastWorkoutTitle").replace("{date}", formatDateLabel(dateISO))) + '</h2>' +
+      '<button class="modal-close" id="closePicker" aria-label="' + t("cancelBtn") + '"><svg viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6 6 18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button></div>' +
+      (isToday ? "" : '<p class="picker-subtitle">' + t("pickWorkoutSubtitle") + "</p>") +
+      '<div id="pickerList"></div>';
+
+    var list = sheet.querySelector("#pickerList");
+    data.program.workouts.forEach(function (w) {
+      var isRecommended = recommended && w.id === recommended.id;
+      var card = el(
+        '<div class="workout-pick-card' + (isRecommended ? " recommended" : "") + '" tabindex="0" role="button">' +
+        (isRecommended ? '<span class="recommended-badge">' + t("recommendedBadge") + "</span>" : "") +
+        "<h4>" + escapeHtml(w.name) + '</h4><div class="muscle-tags">' + w.muscleGroups.map(muscleTag).join("") + "</div>" +
+        "</div>"
+      );
+      card.addEventListener("click", function () {
+        overlay.hidden = true;
+        document.body.style.overflow = "";
+        openActiveWorkout(w, dateISO);
+      });
+      list.appendChild(card);
+    });
+
+    overlay.hidden = false;
+    document.body.style.overflow = "hidden";
+    sheet.querySelector("#closePicker").addEventListener("click", function () {
+      overlay.hidden = true;
+      document.body.style.overflow = "";
+    });
   }
 
   function formatSetsSummary(sets) {
@@ -144,12 +200,14 @@
   }
 
   /* ===================== ACTIVE WORKOUT ===================== */
-  function openActiveWorkout(workout) {
-    activeWorkout = { workout: workout, entries: {} };
+  function openActiveWorkout(workout, dateISO) {
+    dateISO = dateISO || Store.todayISO();
+    activeWorkout = { workout: workout, date: dateISO };
+    var isToday = dateISO === Store.todayISO();
     var overlay = document.getElementById("activeWorkoutOverlay");
     var sheet = overlay.querySelector(".modal-sheet");
     sheet.innerHTML =
-      '<div class="modal-head"><h2>' + escapeHtml(workout.name) + '</h2>' +
+      '<div class="modal-head"><h2>' + escapeHtml(workout.name) + (isToday ? "" : " · " + formatDateLabel(dateISO)) + '</h2>' +
       '<button class="modal-close" id="closeActiveWorkout" aria-label="' + t("cancelBtn") + '"><svg viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6 6 18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button></div>' +
       '<div id="activeExerciseList"></div>' +
       '<div class="modal-actions">' +
@@ -216,7 +274,7 @@
       }
     });
     Store.addSession({
-      date: Store.todayISO(),
+      date: activeWorkout.date,
       workoutId: activeWorkout.workout.id,
       workoutName: activeWorkout.workout.name,
       entries: entries
