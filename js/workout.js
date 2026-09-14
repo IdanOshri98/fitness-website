@@ -209,16 +209,23 @@
     sheet.innerHTML =
       '<div class="modal-head"><h2>' + escapeHtml(workout.name) + (isToday ? "" : " · " + formatDateLabel(dateISO)) + '</h2>' +
       '<button class="modal-close" id="closeActiveWorkout" aria-label="' + t("cancelBtn") + '"><svg viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6 6 18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button></div>' +
+      '<p class="autosave-hint">' + t("autosaveHint") + '</p>' +
       '<div id="activeExerciseList"></div>' +
       '<div class="modal-actions">' +
       '<button class="btn btn-ghost" id="discardWorkoutBtn">' + t("discardBtn") + '</button>' +
       '<button class="btn btn-primary" id="finishWorkoutBtn">' + t("finishWorkoutBtn") + "</button>" +
       "</div>";
 
+    /* Resume in-progress data for this exact date+workout if the user
+       already started it (autosaved) and came back — closing the modal
+       must never lose what was already typed. */
+    var draft = Store.getSessionForDateWorkout(dateISO, workout.id);
+
     var list = sheet.querySelector("#activeExerciseList");
     workout.exercises.forEach(function (pex) {
       var exercise = Store.getExerciseById(pex.exerciseId) || { name: pex.exerciseId };
-      var last = Store.getLastPerformanceForExercise(pex.exerciseId);
+      var last = Store.getLastPerformanceForExercise(pex.exerciseId, dateISO);
+      var draftEntry = draft ? draft.entries.find(function (e) { return e.exerciseId === pex.exerciseId; }) : null;
       var card = el('<div class="exercise-card compact"></div>');
       var lastText = last ? formatSetsSummary(last.entry.sets) : t("noPreviousData");
       card.innerHTML =
@@ -228,22 +235,33 @@
         '<div class="set-log-table" data-ex="' + pex.exerciseId + '">' +
         '<div class="set-log-head"><span></span><span>' + t("weightUsedLabel") + '</span><span>' + t("repsHeaderLabel") + "</span></div>" +
         Array.from({ length: pex.sets }).map(function (_, i) {
+          var draftSet = draftEntry && draftEntry.sets[i] ? draftEntry.sets[i] : null;
+          var wVal = draftSet && draftSet.weight ? draftSet.weight : "";
+          var rVal = draftSet && draftSet.reps ? draftSet.reps : "";
           return '<div class="set-log-row">' +
             '<span class="set-log-num">' + t("setLabelShort") + " " + (i + 1) + '</span>' +
-            '<input type="number" inputmode="decimal" step="0.5" min="0" class="set-log-input" data-role="set-weight" data-ex="' + pex.exerciseId + '" data-set="' + i + '">' +
-            '<input type="number" inputmode="numeric" min="0" class="set-log-input" data-role="set-reps" data-ex="' + pex.exerciseId + '" data-set="' + i + '">' +
+            '<input type="number" inputmode="decimal" step="0.5" min="0" class="set-log-input" data-role="set-weight" data-ex="' + pex.exerciseId + '" data-set="' + i + '" value="' + wVal + '">' +
+            '<input type="number" inputmode="numeric" min="0" class="set-log-input" data-role="set-reps" data-ex="' + pex.exerciseId + '" data-set="' + i + '" value="' + rVal + '">' +
             "</div>";
         }).join("") +
         "</div>" +
-        '<input type="text" class="notes-field" placeholder="' + t("notesPlaceholder") + '" data-role="notes" data-ex="' + pex.exerciseId + '" maxlength="140">';
+        '<input type="text" class="notes-field" placeholder="' + t("notesPlaceholder") + '" data-role="notes" data-ex="' + pex.exerciseId + '" maxlength="140" value="' + escapeHtml(draftEntry ? draftEntry.notes || "" : "") + '">';
       list.appendChild(card);
     });
 
     overlay.hidden = false;
     document.body.style.overflow = "hidden";
 
+    /* Autosave: every time a field loses focus, persist whatever has been
+       entered so far. Nothing is lost if the user closes the tab instead
+       of pressing "Finish Workout" — that button becomes a confirmation,
+       not the only save point. */
+    sheet.querySelectorAll('.set-log-input, [data-role="notes"]').forEach(function (input) {
+      input.addEventListener("blur", autoSaveActiveWorkout);
+    });
+
     sheet.querySelector("#closeActiveWorkout").addEventListener("click", closeActiveWorkout);
-    sheet.querySelector("#discardWorkoutBtn").addEventListener("click", closeActiveWorkout);
+    sheet.querySelector("#discardWorkoutBtn").addEventListener("click", discardActiveWorkout);
     sheet.querySelector("#finishWorkoutBtn").addEventListener("click", finishActiveWorkout);
   }
 
@@ -254,8 +272,9 @@
     activeWorkout = null;
   }
 
-  function finishActiveWorkout() {
-    if (!activeWorkout) return;
+  /* Reads every field currently in the modal into the entries array shape
+     Store.addSession/upsertSession expects. Shared by autosave and finish. */
+  function collectActiveWorkoutEntries() {
     var overlay = document.getElementById("activeWorkoutOverlay");
     var entries = [];
     activeWorkout.workout.exercises.forEach(function (pex) {
@@ -273,12 +292,30 @@
         entries.push({ exerciseId: pex.exerciseId, sets: sets, notes: notes });
       }
     });
-    Store.addSession({
+    return entries;
+  }
+
+  function autoSaveActiveWorkout() {
+    if (!activeWorkout) return;
+    var entries = collectActiveWorkoutEntries();
+    if (!entries.length) return; /* nothing entered yet — don't create an empty session */
+    Store.upsertSession({
       date: activeWorkout.date,
       workoutId: activeWorkout.workout.id,
       workoutName: activeWorkout.workout.name,
       entries: entries
     });
+  }
+
+  function discardActiveWorkout() {
+    if (activeWorkout) Store.deleteSession(activeWorkout.date, activeWorkout.workout.id);
+    closeActiveWorkout();
+    render();
+  }
+
+  function finishActiveWorkout() {
+    if (!activeWorkout) return;
+    autoSaveActiveWorkout();
     closeActiveWorkout();
     showToast(t("workoutSavedMsg"));
     render();

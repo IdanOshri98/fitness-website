@@ -419,6 +419,31 @@
     return session;
   }
 
+  /* Creates or updates the session for a given date+workout — used for
+     autosave while a workout is in progress, so nothing is lost if the
+     user closes the tab mid-workout instead of pressing "Finish". */
+  function upsertSession(session) {
+    var data = load();
+    var existing = data.sessions.find(function (s) { return s.date === session.date && s.workoutId === session.workoutId; });
+    if (existing) {
+      existing.entries = session.entries;
+      existing.workoutName = session.workoutName;
+      save();
+      return existing;
+    }
+    return addSession(session);
+  }
+
+  function deleteSession(dateISO, workoutId) {
+    var data = load();
+    data.sessions = data.sessions.filter(function (s) { return !(s.date === dateISO && s.workoutId === workoutId); });
+    save();
+  }
+
+  function getSessionForDateWorkout(dateISO, workoutId) {
+    return load().sessions.find(function (s) { return s.date === dateISO && s.workoutId === workoutId; }) || null;
+  }
+
   function getSessions() {
     return load().sessions;
   }
@@ -727,6 +752,9 @@
     renameExercise: renameExercise,
     getExercisesUsedForMuscleGroup: getExercisesUsedForMuscleGroup,
     addSession: addSession,
+    upsertSession: upsertSession,
+    deleteSession: deleteSession,
+    getSessionForDateWorkout: getSessionForDateWorkout,
     getSessions: getSessions,
     getLastSessionForWorkout: getLastSessionForWorkout,
     getLastPerformanceForExercise: getLastPerformanceForExercise,
