@@ -71,8 +71,58 @@
       ));
     }
 
+    row.appendChild(renderSleepTile());
+
     card.appendChild(row);
     return card;
+  }
+
+  /* ===================== SLEEP (small tile inside Today's Goals) ===================== */
+  function renderSleepTile() {
+    var todayIso = Store.todayISO();
+    var todayEntry = Store.getSleepEntryForDate(todayIso);
+    var avg = Store.getAverageSleepLast7Days();
+    var avgLine = avg !== null
+      ? '<div class="gt-sub">' + t("sleepAvgLabel") + " " + avg + t("hoursShort") + "</div>"
+      : "";
+
+    var tile = el('<div class="goal-tile sleep-tile"><div class="gt-label">' + t("goalSleepLabel") + "</div></div>");
+
+    if (todayEntry) {
+      tile.innerHTML +=
+        '<div class="sleep-logged-row"><span class="gt-value">' + todayEntry.hours + t("hoursShort") + '</span>' +
+        '<button class="icon-btn sleep-edit-btn" id="sleepEditBtn" aria-label="' + t("editBtn") + '"><svg viewBox="0 0 24 24" fill="none"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>' +
+        avgLine;
+      tile.querySelector("#sleepEditBtn").addEventListener("click", function () {
+        var newTile = renderSleepInputState(todayIso, todayEntry.hours, avgLine);
+        tile.replaceWith(newTile);
+      });
+    } else {
+      var inputWrap = renderSleepInputState(todayIso, "", avgLine);
+      return inputWrap;
+    }
+
+    return tile;
+  }
+
+  function renderSleepInputState(dateISO, currentValue, avgLine) {
+    var tile = el(
+      '<div class="goal-tile sleep-tile"><div class="gt-label">' + t("goalSleepLabel") + '</div>' +
+      '<div class="sleep-input-row">' +
+      '<input type="number" inputmode="decimal" step="0.5" min="0" max="24" id="sleepHoursInput" placeholder="' + t("hoursPlaceholder") + '" value="' + escapeHtml(String(currentValue)) + '">' +
+      '<button class="icon-btn sleep-save-btn" id="sleepSaveBtn" aria-label="' + t("saveBtn") + '"><svg viewBox="0 0 24 24" fill="none"><path d="m5 13 4 4 10-10" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>' +
+      "</div>" + avgLine + "</div>"
+    );
+    var input = tile.querySelector("#sleepHoursInput");
+    function save() {
+      var hours = parseFloat(input.value);
+      if (isNaN(hours) || hours < 0) { input.focus(); return; }
+      Store.addSleepEntry(hours, dateISO);
+      render();
+    }
+    tile.querySelector("#sleepSaveBtn").addEventListener("click", save);
+    input.addEventListener("keydown", function (e) { if (e.key === "Enter") { e.preventDefault(); save(); } });
+    return tile;
   }
 
   /* ===================== TODAY'S WORKOUT ===================== */

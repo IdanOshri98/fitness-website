@@ -982,6 +982,23 @@ button{font-family:inherit;}
 .goal-tile .gt-value{font-size:1.15rem;font-weight:800;}
 .goal-tile.prompt{display:flex;flex-direction:column;justify-content:center;align-items:flex-start;gap:6px;}
 .goal-tile.prompt a{color:var(--color-primary);font-size:0.82rem;font-weight:700;text-decoration:none;}
+.goal-tile .gt-sub{font-size:0.7rem;color:var(--color-text-muted);margin-top:6px;}
+.sleep-tile .sleep-input-row{display:flex;align-items:center;gap:6px;}
+.sleep-tile .sleep-input-row input{
+  width:100%;min-width:0;
+  background:var(--color-surface);border:1px solid var(--color-border);color:var(--color-text);
+  border-radius:8px;padding:8px 10px;font-size:0.95rem;font-weight:700;min-height:38px;
+}
+.sleep-tile .sleep-input-row input:focus-visible{outline:2px solid var(--color-primary);outline-offset:1px;}
+.sleep-tile .sleep-save-btn,.sleep-tile .sleep-edit-btn{
+  width:34px;height:34px;flex:none;border-radius:8px;
+  background:var(--color-surface);border:1px solid var(--color-border);color:var(--color-text-muted);
+  display:flex;align-items:center;justify-content:center;cursor:pointer;
+}
+.sleep-tile .sleep-save-btn:hover{color:var(--color-primary);border-color:var(--color-primary);}
+.sleep-tile .sleep-edit-btn:hover{color:var(--color-primary);border-color:var(--color-primary);}
+.sleep-tile .sleep-save-btn svg,.sleep-tile .sleep-edit-btn svg{width:15px;height:15px;}
+.sleep-logged-row{display:flex;align-items:center;justify-content:space-between;gap:8px;}
 @media (max-width:600px){
   .summary-grid{grid-template-columns:1fr 1fr;}
 }

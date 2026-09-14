@@ -181,6 +181,7 @@
       foods: [],
       nutrition: { targets: { calories: 2200, protein: 140 }, meals: [] },
       weightEntries: [],
+      sleepEntries: [],
       /* Real body/profile info the user enters themselves — never pre-filled
          with guessed values. null means "not provided yet", which the UI
          must treat as "ask the user", not as zero/default. */
@@ -486,6 +487,39 @@
     return load().weightEntries;
   }
 
+  /* ---------------- Sleep entries ---------------- */
+  function addSleepEntry(hours, dateISO) {
+    var data = load();
+    var entry = { id: uid("sleep"), date: dateISO || todayISO(), hours: hours };
+    var existingIdx = data.sleepEntries.findIndex(function (s) { return s.date === entry.date; });
+    if (existingIdx !== -1) data.sleepEntries[existingIdx] = entry;
+    else data.sleepEntries.push(entry);
+    data.sleepEntries.sort(function (a, b) { return a.date < b.date ? -1 : a.date > b.date ? 1 : 0; });
+    save();
+    return entry;
+  }
+
+  function getSleepEntries() {
+    return load().sleepEntries;
+  }
+
+  function getSleepEntryForDate(dateISO) {
+    return load().sleepEntries.find(function (s) { return s.date === dateISO; }) || null;
+  }
+
+  /* Average of whatever real entries exist within the last 7 calendar days
+     (today included). Returns null if there is no data at all — never
+     invents a number for missing days. */
+  function getAverageSleepLast7Days() {
+    var data = load();
+    var cutoff = daysAgoISO(6);
+    var todayIso = todayISO();
+    var relevant = data.sleepEntries.filter(function (s) { return s.date >= cutoff && s.date <= todayIso; });
+    if (!relevant.length) return null;
+    var sum = relevant.reduce(function (acc, s) { return acc + s.hours; }, 0);
+    return Math.round((sum / relevant.length) * 10) / 10;
+  }
+
   /* Weekly workout counts for the last N weeks, oldest first: [{weekLabel, count}] */
   function getWeeklyWorkoutCounts(weeks) {
     weeks = weeks || 8;
@@ -700,6 +734,10 @@
     getRolling7Days: getRolling7Days,
     addWeightEntry: addWeightEntry,
     getWeightEntries: getWeightEntries,
+    addSleepEntry: addSleepEntry,
+    getSleepEntries: getSleepEntries,
+    getSleepEntryForDate: getSleepEntryForDate,
+    getAverageSleepLast7Days: getAverageSleepLast7Days,
     getWeeklyWorkoutCounts: getWeeklyWorkoutCounts,
     getExerciseProgress: getExerciseProgress,
     getExercisesWithHistory: getExercisesWithHistory,
