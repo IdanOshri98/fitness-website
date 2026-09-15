@@ -440,17 +440,59 @@
       var val = picker.value;
       if (!val) return;
       if (val === "__custom__") {
-        var name = prompt(t("customExerciseNamePlaceholder"));
-        if (!name) return;
-        var ex = Store.addCustomExercise(name.trim(), "other");
-        workout.exercises.push({ id: Store.uid("pex"), exerciseId: ex.id, sets: 3, repMin: 8, repMax: 10 });
+        openCustomExerciseModal(function (ex) {
+          workout.exercises.push({ id: Store.uid("pex"), exerciseId: ex.id, sets: 3, repMin: 8, repMax: 10 });
+          renderEditProgramSheet(document.querySelector("#editProgramOverlay .modal-sheet"));
+        });
       } else {
         workout.exercises.push({ id: Store.uid("pex"), exerciseId: val, sets: 3, repMin: 8, repMax: 10 });
+        renderEditProgramSheet(document.querySelector("#editProgramOverlay .modal-sheet"));
       }
-      renderEditProgramSheet(document.querySelector("#editProgramOverlay .modal-sheet"));
     });
 
     return block;
+  }
+
+  /* Styled replacement for the old prompt()-based custom exercise creation. */
+  function openCustomExerciseModal(onCreated) {
+    var overlay = document.getElementById("customExerciseOverlay");
+    var sheet = overlay.querySelector(".modal-sheet");
+    sheet.innerHTML =
+      '<div class="modal-head"><h2>' + t("newCustomExerciseTitle") + '</h2>' +
+      '<button class="modal-close" id="closeCustomExercise" aria-label="' + t("cancelBtn") + '"><svg viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6 6 18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button></div>' +
+      '<div class="form-row"><label>' + t("exerciseNameFieldLabel") + '</label><input type="text" id="customExName" maxlength="60" autofocus></div>' +
+      '<div class="form-row"><label>' + t("muscleGroupsLabel") + '</label><div class="pill-select" id="customExGroup">' +
+      Store.MUSCLE_GROUPS.map(function (mg) { return '<button type="button" data-val="' + mg + '">' + t("muscle_" + mg) + "</button>"; }).join("") +
+      "</div></div>" +
+      '<div class="modal-actions"><button class="btn btn-ghost" id="cancelCustomExercise">' + t("cancelBtn") + '</button>' +
+      '<button class="btn btn-primary" id="saveCustomExercise">' + t("addCustomExerciseBtn") + "</button></div>";
+
+    sheet.querySelector("#customExGroup").addEventListener("click", function (e) {
+      var btn = e.target.closest("button");
+      if (!btn) return;
+      sheet.querySelectorAll("#customExGroup button").forEach(function (b) { b.classList.toggle("active", b === btn); });
+    });
+
+    overlay.hidden = false;
+    document.body.style.overflow = "hidden";
+    var nameInput = sheet.querySelector("#customExName");
+    nameInput.focus();
+
+    function close() { overlay.hidden = true; document.body.style.overflow = ""; }
+    sheet.querySelector("#closeCustomExercise").addEventListener("click", close);
+    sheet.querySelector("#cancelCustomExercise").addEventListener("click", close);
+
+    function save() {
+      var name = nameInput.value.trim();
+      if (!name) { nameInput.focus(); return; }
+      var groupBtn = sheet.querySelector("#customExGroup .active");
+      var muscleGroup = groupBtn ? groupBtn.getAttribute("data-val") : "other";
+      var ex = Store.addCustomExercise(name, muscleGroup);
+      close();
+      onCreated(ex);
+    }
+    sheet.querySelector("#saveCustomExercise").addEventListener("click", save);
+    nameInput.addEventListener("keydown", function (e) { if (e.key === "Enter") { e.preventDefault(); save(); } });
   }
 
   function renderExerciseRow(workout, pex, exIdx) {

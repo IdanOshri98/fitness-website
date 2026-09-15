@@ -515,6 +515,17 @@ button{font-family:inherit;}
   border-radius:var(--radius-md);
   padding:var(--space-5);
 }
+
+/* ---- Legal pages (privacy.html / terms.html) ---- */
+.legal-doc{max-width:760px;}
+.legal-doc .app-header p{color:var(--color-text-muted);margin-top:4px;}
+.legal-doc .card h2{font-size:1.05rem;font-weight:800;margin:var(--space-6) 0 var(--space-2);}
+.legal-doc .card h2:first-child{margin-top:0;}
+.legal-doc .card p{color:var(--color-text-muted);line-height:1.7;margin:0 0 var(--space-3);}
+.legal-doc .card ul{color:var(--color-text-muted);line-height:1.7;margin:0 0 var(--space-3);padding-inline-start:1.3em;}
+.legal-doc .card li{margin-bottom:4px;}
+.legal-doc .card a{color:var(--color-primary);}
+.legal-doc .card strong{color:var(--color-text);}
 .card + .card{margin-top:var(--space-5);}
 .card-title-row{display:flex;align-items:center;justify-content:space-between;gap:var(--space-3);margin-bottom:var(--space-4);flex-wrap:wrap;}
 .card-title-row h2,.card-title-row h3{margin:0;font-size:1.05rem;font-weight:700;}
@@ -584,6 +595,12 @@ button{font-family:inherit;}
   cursor:pointer;padding:4px;
 }
 .link-btn:hover{color:var(--color-text);}
+.link-btn.danger-link{color:var(--color-danger);opacity:0.8;}
+.link-btn.danger-link:hover{opacity:1;}
+.delete-account-note{font-size:0.8rem;color:var(--color-text-muted);background:var(--color-surface-2);border-radius:var(--radius-sm);padding:10px 12px;margin-top:-4px;}
+.btn.danger-btn{background:var(--color-danger);color:#2b0a0a;box-shadow:none;}
+.btn.danger-btn:hover{box-shadow:0 8px 20px rgba(255,107,107,0.3);}
+.btn.danger-btn:disabled{opacity:0.4;cursor:not-allowed;}
 
 /* ---- Workout picker (choose a different workout / log a missed day) ---- */
 .picker-subtitle{color:var(--color-text-muted);font-size:0.88rem;margin:-4px 0 var(--space-4);}

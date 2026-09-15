@@ -299,6 +299,22 @@
       });
   }
 
+  /* Permanently deletes this user's row from the server (all workouts,
+     nutrition, progress — everything) and clears the local cache/copy.
+     NOTE: this does NOT delete the login account itself (email+password
+     with Supabase Auth) — that requires the Admin API with a service-role
+     key, which must never run in browser code. See auth-gate.js callers
+     for how this is surfaced to the user. */
+  function deleteAllRemoteData() {
+    if (!currentUserId || !window.sb) return Promise.reject(new Error("Not signed in"));
+    return window.sb.from("app_data").delete().eq("id", currentUserId).then(function (res) {
+      if (res.error) throw res.error;
+      cache = blankData();
+      try { localStorage.removeItem(KEY); } catch (e) {}
+      return true;
+    });
+  }
+
   /* Loads this user's row from Supabase into the in-memory cache. Must
      resolve before any page calls getData()/render() for the first time.
      If the user has no row yet (first ever sign-in), starts them from a
@@ -745,6 +761,7 @@
     getData: getData,
     setUserId: setUserId,
     loadRemote: loadRemote,
+    deleteAllRemoteData: deleteAllRemoteData,
     applySplitTemplate: applySplitTemplate,
     updateProgram: updateProgram,
     getExerciseById: getExerciseById,

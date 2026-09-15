@@ -31,6 +31,57 @@
     root.appendChild(renderTodaysGoals(data));
     root.appendChild(renderTodaysWorkout(data));
     root.appendChild(renderUserSummary(data));
+    root.appendChild(renderAccountSection());
+  }
+
+  /* ===================== ACCOUNT (danger zone) ===================== */
+  function renderAccountSection() {
+    var card = el('<div class="card"></div>');
+    card.innerHTML =
+      '<div class="card-title-row"><h2>' + t("accountSectionTitle") + "</h2></div>" +
+      '<button class="link-btn danger-link" id="deleteAccountLink">' + t("deleteAccountLink") + "</button>";
+    card.querySelector("#deleteAccountLink").addEventListener("click", openDeleteAccountModal);
+    return card;
+  }
+
+  function openDeleteAccountModal() {
+    var overlay = document.getElementById("deleteAccountOverlay");
+    var sheet = overlay.querySelector(".modal-sheet");
+    sheet.innerHTML =
+      '<div class="modal-head"><h2>' + t("deleteAccountTitle") + '</h2>' +
+      '<button class="modal-close" id="closeDeleteAccount" aria-label="' + t("cancelBtn") + '"><svg viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6 6 18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button></div>' +
+      '<p>' + t("deleteAccountWarning") + '</p>' +
+      '<p class="delete-account-note">' + t("deleteAccountAuthNote") + '</p>' +
+      '<div class="form-row"><label>' + t("deleteAccountConfirmLabel") + '</label><input type="text" id="deleteConfirmInput" autocomplete="off"></div>' +
+      '<div class="modal-actions"><button class="btn btn-ghost" id="cancelDeleteAccount">' + t("cancelBtn") + '</button>' +
+      '<button class="btn btn-primary danger-btn" id="confirmDeleteAccount" disabled>' + t("deleteAccountConfirmBtn") + "</button></div>";
+
+    overlay.hidden = false;
+    document.body.style.overflow = "hidden";
+    function close() { overlay.hidden = true; document.body.style.overflow = ""; }
+    sheet.querySelector("#closeDeleteAccount").addEventListener("click", close);
+    sheet.querySelector("#cancelDeleteAccount").addEventListener("click", close);
+
+    var input = sheet.querySelector("#deleteConfirmInput");
+    var confirmBtn = sheet.querySelector("#confirmDeleteAccount");
+    var expected = t("deleteAccountConfirmWord");
+    input.addEventListener("input", function () {
+      confirmBtn.disabled = input.value.trim().toUpperCase() !== expected.toUpperCase();
+    });
+
+    confirmBtn.addEventListener("click", function () {
+      confirmBtn.disabled = true;
+      confirmBtn.textContent = "…";
+      Store.deleteAllRemoteData().then(function () {
+        close();
+        window.KoachAuth.signOut();
+      }).catch(function (err) {
+        console.error("Koach: failed to delete account data", err);
+        confirmBtn.disabled = false;
+        confirmBtn.textContent = t("deleteAccountConfirmBtn");
+        window.KoachToast(t("saveFailedMsg"), "error");
+      });
+    });
   }
 
   /* ===================== TODAY'S GOALS ===================== */
